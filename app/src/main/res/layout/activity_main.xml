@@ -11,26 +11,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="UI Animator Viewer"
+        android:text="Network Connection App"
         android:textSize="25sp" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
-        android:layout_alignEnd="@+id/textView"
-        android:layout_alignRight="@+id/textView"
-        android:text="Tutorials point"
-        android:textColor="#ff36ff15"
-        android:textIsSelectable="false"
-        android:textSize="35dp" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true" />
 
     <Button
@@ -40,6 +29,6 @@
         android:layout_below="@+id/imageView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="76dp"
-        android:text="Button" />
+        android:text="Download Image" />
 
 </RelativeLayout>

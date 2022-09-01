@@ -1,6 +1,7 @@
 package com.example.networkconnectionapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
@@ -27,9 +28,13 @@ public class MainActivity extends AppCompatActivity {
     private Bitmap bitmap = null;
     Button b1;
 
+    private String imageUrl = "https://avatars.githubusercontent.com/u/87969632?v=4";
+    private String imageUrl2 = "https://media-exp1.licdn.com/dms/image/C4E03AQFNInNzJQdfOg/profile-displayphoto-shrink_800_800/0/1619782388762?e=1667433600&v=beta&t=qFeHJEYp2PyWg5btfglRkPitRhTfb_CHCSflRJn0XnE";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         setContentView(R.layout.activity_main);
         b1 = (Button) findViewById(R.id.button);
 
@@ -37,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 checkInternetConenction();
-                downloadImage("http://www.tutorialspoint.com/green/images/logo.png");
+                downloadImage(imageUrl2);
             }
         });
     }
