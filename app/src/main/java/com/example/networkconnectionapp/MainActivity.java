@@ -42,8 +42,6 @@ public class MainActivity extends AppCompatActivity {
     private Bitmap bitmap = null;
     Button b1;
 
-    private String imageUrl2 = "https://avatars.githubusercontent.com/u/87969632?v=4";
-    private String imageUrl = "https://avatars.githubusercontent.com/u/56029541?s=400&u=5b45a9a39835b38dd1823267076b79cefd5e0b7c&v=4";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 NetworkManagerUtils.checkInternetConnection(MainActivity.this);
-                downloadImage(imageUrl2);
+                downloadImage("PLEASE USE YOUR OWN IMAGE URL");
                 String networkType = NetworkManagerUtils.getNetworkClass(MainActivity.this);
                 textViewNetworkType.setText(networkType);
                 if(NetworkManagerUtils.isConnectedWifi(MainActivity.this)){
