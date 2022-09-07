@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="Network Connection App"
+        android:text="Network Connection Variation App"
         android:textSize="25sp" />
 
 
