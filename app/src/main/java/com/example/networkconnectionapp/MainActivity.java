@@ -1,19 +1,28 @@
 package com.example.networkconnectionapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.telephony.PhoneStateListener;
+import android.telephony.SignalStrength;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,12 +33,17 @@ import java.net.URLConnection;
 
 
 public class MainActivity extends AppCompatActivity {
+    private TelephonyManager telephonyManager;
+    private PhoneCustomStateListener psListener;
+    private TextView textViewNetworkType;
+    private TextView textViewNetworkStrength;
+    private TextView textviewWifi;
     private ProgressDialog progressDialog;
     private Bitmap bitmap = null;
     Button b1;
 
-    private String imageUrl = "https://avatars.githubusercontent.com/u/87969632?v=4";
-    private String imageUrl2 = "https://media-exp1.licdn.com/dms/image/C4E03AQFNInNzJQdfOg/profile-displayphoto-shrink_800_800/0/1619782388762?e=1667433600&v=beta&t=qFeHJEYp2PyWg5btfglRkPitRhTfb_CHCSflRJn0XnE";
+    private String imageUrl2 = "https://avatars.githubusercontent.com/u/87969632?v=4";
+    private String imageUrl = "https://avatars.githubusercontent.com/u/56029541?s=400&u=5b45a9a39835b38dd1823267076b79cefd5e0b7c&v=4";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +51,47 @@ public class MainActivity extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         setContentView(R.layout.activity_main);
         b1 = (Button) findViewById(R.id.button);
+        textViewNetworkType = (TextView) findViewById(R.id.tv_network_type);
+        textViewNetworkStrength = (TextView) findViewById(R.id.tv_network_strength);
+        textviewWifi = findViewById(R.id.tv_wifi);
+
+        psListener = new PhoneCustomStateListener();
+        telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        telephonyManager.listen(psListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkInternetConenction();
+                NetworkManagerUtils.checkInternetConnection(MainActivity.this);
                 downloadImage(imageUrl2);
+                String networkType = NetworkManagerUtils.getNetworkClass(MainActivity.this);
+                textViewNetworkType.setText(networkType);
+                if(NetworkManagerUtils.isConnectedWifi(MainActivity.this)){
+                    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                    int numberOfLevels = 5;
+                    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                    int level = WifiManager.calculateSignalLevel(wifiInfo.getRssi(), numberOfLevels);
+                    if (level == 4) {
+                        textviewWifi.setText("Wifi Signal : Great");
+
+
+                    } else if (level == 3) {
+                        textviewWifi.setText("Wifi Signal : Good");
+
+
+                    } else if (level == 2) {
+                        textviewWifi.setText("Wifi Signal : Moderate");
+
+
+                    } else if (level == 1) {
+                        textviewWifi.setText("Wifi Signal : Poor");
+
+                    }else{
+                        textviewWifi.setText("Wifi Signal : Very weak");
+                    }
+                }else{
+                    textviewWifi.setText("No Wifi Connected");
+                }
             }
         });
     }
@@ -64,11 +113,11 @@ public class MainActivity extends AppCompatActivity {
                     Bundle b = new Bundle();
                     b.putParcelable("bitmap", bitmap);
                     msg.setData(b);
-                    if(in != null){
+                    if (in != null) {
 
                         in.close();
                     }
-                }catch (IOException e1) {
+                } catch (IOException e1) {
                     e1.printStackTrace();
                 }
                 messageHandler.sendMessage(msg);
@@ -98,9 +147,9 @@ public class MainActivity extends AppCompatActivity {
             if (resCode == HttpURLConnection.HTTP_OK) {
                 in = httpConn.getInputStream();
             }
-        }catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return in;
@@ -115,30 +164,36 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private boolean checkInternetConenction() {
-        // get Connectivity Manager object to check connection
-        ConnectivityManager connec
-                =(ConnectivityManager)getSystemService(getBaseContext().CONNECTIVITY_SERVICE);
+    public class PhoneCustomStateListener extends PhoneStateListener {
 
-        // Check for network connections
-        if ( connec.getNetworkInfo(0).getState() ==
-                android.net.NetworkInfo.State.CONNECTED ||
-                connec.getNetworkInfo(0).getState() ==
-                        android.net.NetworkInfo.State.CONNECTING ||
-                connec.getNetworkInfo(1).getState() ==
-                        android.net.NetworkInfo.State.CONNECTING ||
-                connec.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.CONNECTED ) {
-            Toast.makeText(this, " Connected ", Toast.LENGTH_LONG).show();
-            return true;
-        }else if (
-                connec.getNetworkInfo(0).getState() ==
-                        android.net.NetworkInfo.State.DISCONNECTED ||
-                        connec.getNetworkInfo(1).getState() ==
-                                android.net.NetworkInfo.State.DISCONNECTED  ) {
-            Toast.makeText(this, " Not Connected ", Toast.LENGTH_LONG).show();
-            return false;
+        public int signalSupport = 0;
+
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        @Override
+        public void onSignalStrengthsChanged(SignalStrength signalStrength) {
+            super.onSignalStrengthsChanged(signalStrength);
+
+            int signalLevel = signalStrength.getLevel();
+            Log.d(getClass().getCanonicalName(), "------ gsm signal --> " + signalSupport);
+
+            if (signalLevel == 4) {
+                textViewNetworkStrength.setText("Mobile Signal : Great");
+
+
+            } else if (signalLevel == 3) {
+                textViewNetworkStrength.setText("Mobile Signal : Good");
+
+
+            } else if (signalLevel == 2) {
+                textViewNetworkStrength.setText("Mobile Signal : Moderate");
+
+
+            } else if (signalLevel == 1) {
+                textViewNetworkStrength.setText("Mobile Signal : Poor");
+
+            }else{
+                textViewNetworkStrength.setText("Mobile Signal : Very weak");
+            }
         }
-        return false;
     }
-
 }

@@ -31,4 +31,31 @@
         android:layout_marginTop="76dp"
         android:text="Download Image" />
 
+    <TextView
+        android:id="@+id/tv_network_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="Network Type" />
+
+    <TextView
+        android:id="@+id/tv_network_strength"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_network_type"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="Mobile Network Strength" />
+
+    <TextView
+        android:id="@+id/tv_wifi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_network_strength"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="Wifi Network Strength" />
+
 </RelativeLayout>
